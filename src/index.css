@@ -1,0 +1,267 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Deep navy to vibrant teal gradient aesthetic */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 9%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Vibrant teal primary - vivid and popping */
+    --primary: 174 72% 56%;
+    --primary-foreground: 222 47% 6%;
+
+    --secondary: 222 30% 14%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 222 30% 12%;
+    --muted-foreground: 215 20% 65%;
+
+    /* Accent - warm coral/orange for contrast */
+    --accent: 14 100% 68%;
+    --accent-foreground: 222 47% 6%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Grid lines - Visible and retro-tech */
+    --border: 222 30% 18%;
+    --input: 222 30% 18%;
+    --ring: 174 72% 56%;
+
+    --radius: 0.5rem;
+
+    /* Custom tokens */
+    --grid-line: 215 20% 25%;
+    /* Slightly lighter for better visibility */
+    --grid-line-accent: 174 72% 56%;
+
+    /* Strong Glassmorphism */
+    --glass: 222 47% 11% / 0.6;
+    --glass-strong: 222 47% 11% / 0.8;
+    --glass-border: 210 40% 98% / 0.15;
+
+    /* Gradient tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(174 72% 56%) 0%, hsl(199 89% 48%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(14 100% 68%) 0%, hsl(340 82% 62%) 100%);
+    --gradient-hero: radial-gradient(circle at top center, hsl(222 47% 15%) 0%, hsl(222 47% 6%) 60%);
+
+    --sidebar-background: 222 47% 8%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 174 72% 56%;
+    --sidebar-primary-foreground: 222 47% 6%;
+    --sidebar-accent: 222 30% 14%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 222 30% 18%;
+    --sidebar-ring: 174 72% 56%;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+    background-image:
+      linear-gradient(to right, hsl(var(--grid-line) / 0.2) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--grid-line) / 0.2) 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Montserrat', system-ui, sans-serif;
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer components {
+
+  /* Visible grid system */
+  .grid-visible {
+    @apply border border-grid-line;
+  }
+
+  .grid-cell {
+    @apply border-b border-r border-grid-line p-6 relative overflow-hidden;
+  }
+
+  /* Glass panel effect */
+  .glass-panel {
+    background: hsl(var(--glass));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .glass-panel-strong {
+    background: hsl(var(--glass-strong));
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-accent {
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Grid hover effects */
+  .grid-cell-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .grid-cell-hover:hover {
+    @apply bg-secondary/50;
+    box-shadow: inset 0 0 40px hsl(var(--primary) / 0.05);
+  }
+
+  .grid-cell-hover:hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    background: var(--gradient-primary);
+    animation: slide-down 1s ease-in-out;
+  }
+
+  /* Feature icon container */
+  .feature-icon {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center text-white;
+    background: var(--gradient-primary);
+    box-shadow: 0 8px 20px hsl(var(--primary) / 0.3);
+  }
+
+  .feature-icon-accent {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center text-white;
+    background: var(--gradient-accent);
+    box-shadow: 0 8px 20px hsl(var(--accent) / 0.3);
+  }
+
+  /* Button glow effect */
+  .btn-glow {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .btn-glow::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, hsl(var(--primary)/0.2) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.5s ease;
+  }
+
+  .btn-glow:hover::before {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 60px hsl(var(--primary) / 0.6);
+  }
+}
+
+@layer utilities {
+
+  /* Animation utilities */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-soft {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .animate-grid-glow {
+    animation: grid-glow 4s ease-in-out infinite;
+  }
+
+  @keyframes grid-glow {
+
+    0%,
+    100% {
+      border-color: hsl(var(--grid-line) / 0.5);
+    }
+
+    50% {
+      border-color: hsl(var(--primary) / 0.5);
+    }
+  }
+
+  @keyframes slide-down {
+    0% {
+      height: 0;
+      opacity: 1;
+    }
+
+    100% {
+      height: 100%;
+      opacity: 0;
+    }
+  }
+}
