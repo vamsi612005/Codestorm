@@ -1,9 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Sparkles, ArrowRight } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
+
 const FutureSection = () => {
+    const navigate = useNavigate();
+
     return (
-        <section className="py-32 border-b border-grid-line relative overflow-hidden flex flex-col items-center justify-center text-center">
+        <section className="py-32 border-b border-grid-line relative overflow-hidden flex flex-col items-center justify-center text-center" id="future">
             <div className="absolute inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
 
@@ -24,7 +28,7 @@ const FutureSection = () => {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button size="xl" variant="hero" className="btn-glow px-12">
+                    <Button size="xl" variant="hero" className="btn-glow px-12" onClick={() => navigate("/student-app")}>
                         Get Early Access <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
                 </div>

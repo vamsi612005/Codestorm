@@ -2,11 +2,11 @@ import { Rocket, Brain, Clock, Shield } from "lucide-react";
 
 const BenefitsSection = () => {
   return (
-    <section className="py-24 border-b border-grid-line bg-background relative">
+    <section className="py-24 border-b border-grid-line bg-background relative" id="benefits">
       <div className="container mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-primary font-bold tracking-widest text-sm uppercase mb-4 block">Why Neev.AI?</span>
-          <h2 className="text-4xl md:text-5xl font-black mb-6">Built for the <span className="gradient-text-accent">Modern Student</span></h2>
+          <h2 className="text-4xl md:text-5xl font-black mb-6">Built for the <span className="text-accent">Modern Student</span></h2>
           <p className="text-muted-foreground text-lg">
             Traditional studying is passive. Neev.AI makes it active, engaging, and hyper-efficient.
             Stop memorizing, start understanding.

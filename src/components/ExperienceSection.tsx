@@ -1,8 +1,9 @@
+
 import { Layout, Palette, Zap, MousePointer2 } from "lucide-react";
 
 const ExperienceSection = () => {
     return (
-        <section className="py-24 border-b border-grid-line bg-background relative overflow-hidden">
+        <section className="py-24 border-b border-grid-line bg-background relative overflow-hidden" id="experience">
             <div className="container mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 

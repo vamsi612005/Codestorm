@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Globe, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import KeynoteModal from "./KeynoteModal";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="pt-32 pb-16 border-b border-grid-line relative overflow-hidden">
       {/* Background Ambience */}
@@ -34,14 +38,17 @@ const HeroSection = () => {
 
               {/* CTAs */}
               <div className="flex flex-wrap gap-5 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-                <Button variant="hero" size="xl" className="btn-glow">
+                <Button variant="hero" size="xl" className="btn-glow" onClick={() => navigate("/student-app")}>
                   Start Your Journey
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-                <Button variant="hero-outline" size="xl" className="group">
-                  <Play className="w-5 h-5 mr-2 group-hover:text-primary transition-colors" />
-                  Watch Keynote
-                </Button>
+
+                <KeynoteModal>
+                  <Button variant="hero-outline" size="xl" className="group">
+                    <Play className="w-5 h-5 mr-2 group-hover:text-primary transition-colors" />
+                    Watch Keynote
+                  </Button>
+                </KeynoteModal>
               </div>
             </div>
           </div>
