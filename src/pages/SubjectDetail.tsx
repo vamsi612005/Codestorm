@@ -65,7 +65,7 @@ export const SubjectDetail = () => {
                 </Button>
                 <div>
                     <h1 className="text-2xl font-bold flex items-center gap-2">
-                        <Icon className={`w-6 h-6 ${subject.color || 'text-primary'}`} />
+                        <Icon className="w-6 h-6 text-primary" />
                         {subject.title}
                     </h1>
                     <p className="text-muted-foreground text-sm">{subject.description}</p>
