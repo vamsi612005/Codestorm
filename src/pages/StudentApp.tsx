@@ -1,10 +1,18 @@
-
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, LayoutDashboard, Calendar, Settings, Bell, BookOpen, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, LayoutDashboard, Calendar, Settings, Bell, BookOpen, GraduationCap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { Course } from "@/types/api";
+import { getIcon } from "@/utils/iconMap";
 
 const StudentApp = () => {
     const navigate = useNavigate();
+
+    const { data: courses, isLoading, error } = useQuery({
+        queryKey: ['courses'],
+        queryFn: api.getCourses
+    });
 
     return (
         <div className="min-h-screen bg-background text-foreground flex">
@@ -28,8 +36,8 @@ const StudentApp = () => {
                         <button
                             key={item.label}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${item.active
-                                    ? 'bg-primary/10 text-primary font-semibold'
-                                    : 'text-muted-foreground hover:bg-white/5 hover:text-white'
+                                ? 'bg-primary/10 text-primary font-semibold'
+                                : 'text-muted-foreground hover:bg-white/5 hover:text-white'
                                 }`}
                         >
                             <item.icon className="w-5 h-5" />
@@ -56,18 +64,41 @@ const StudentApp = () => {
                     </div>
                 </header>
 
-                <div className="p-8 flex flex-col items-center justify-center min-h-[600px] text-center max-w-lg mx-auto">
-                    <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6 animate-pulse">
-                        <LayoutDashboard className="w-12 h-12 text-primary" />
+                <div className="p-8">
+                    <div className="mb-8">
+                        <h2 className="text-3xl font-black mb-2">Student Dashboard</h2>
+                        <p className="text-muted-foreground text-lg">Select a subject to start learning.</p>
                     </div>
-                    <h2 className="text-3xl font-black mb-4">Student Dashboard</h2>
-                    <p className="text-muted-foreground mb-8 text-lg">
-                        This is the authenticated area for students. Your courses, quizzes, and progress tracking would appear here.
-                    </p>
-                    <Button onClick={() => navigate("/")} variant="outline" className="gap-2">
-                        <ArrowLeft className="w-4 h-4" />
-                        Back to Home
-                    </Button>
+
+                    {isLoading ? (
+                        <div className="text-center py-20 text-muted-foreground">Loading specific subjects...</div>
+                    ) : error ? (
+                        <div className="text-center py-20 text-red-400">Error loading subjects. Is the backend running?</div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {courses?.map((course: Course) => {
+                                const Icon = getIcon(course.icon);
+                                return (
+                                    <div
+                                        key={course._id}
+                                        onClick={() => navigate(`/student-app/subject/${course._id}`)}
+                                        className="group bg-secondary/30 border border-white/5 hover:border-primary/50 p-6 rounded-2xl cursor-pointer transition-all hover:-translate-y-1"
+                                    >
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className={`w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors`}>
+                                                <Icon className={`w-6 h-6 ${course.color || 'text-primary'}`} />
+                                            </div>
+                                            <span className="text-xs font-bold bg-white/5 px-2 py-1 rounded text-muted-foreground">
+                                                {course.progress}%
+                                            </span>
+                                        </div>
+                                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">{course.title}</h3>
+                                        <p className="text-sm text-gray-400 line-clamp-2">{course.description}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
