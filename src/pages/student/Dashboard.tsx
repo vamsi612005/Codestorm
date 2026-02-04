@@ -1,69 +1,134 @@
 
-import { useNavigate } from "react-router-dom";
-import { Book, ChevronRight, Calculator, FlaskConical, Globe, Code, Music, Palette, Bitcoin, Activity } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-
-// Icon mapping helper
-const getIcon = (name: string) => {
-    const icons: Record<string, any> = { Calculator, Activity, FlaskConical, Globe, Code, Book, Music, Palette, Bitcoin };
-    return icons[name] || Book;
-};
+import { useState, useRef } from "react";
+import { Upload, File, CheckCircle, AlertCircle, X, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
+import { API_URL } from "@/lib/api";
 
 const Dashboard = () => {
-    const navigate = useNavigate();
+    const { toast } = useToast();
+    const [files, setFiles] = useState<File[]>([]);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const { data: courses, isLoading, error } = useQuery({
-        queryKey: ['courses'],
-        queryFn: async () => {
-            const res = await fetch('/api/courses');
-            if (!res.ok) throw new Error('Network response was not ok');
-            return res.json();
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const newFiles = Array.from(e.target.files);
+            setFiles(prev => [...prev, ...newFiles]);
         }
-    });
+    };
 
-    if (isLoading) return <div className="text-center p-20 animate-pulse">Loading amazing courses...</div>;
-    if (error) return <div className="text-center p-20 text-red-400">Error loading courses. Please try again.</div>;
+    const removeFile = (index: number) => {
+        setFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleUpload = async () => {
+        if (files.length === 0) return;
+
+        setIsUploading(true);
+        const formData = new FormData();
+        files.forEach(file => {
+            formData.append('files', file);
+        });
+
+        try {
+            const res = await fetch(`${API_URL}/upload`, {
+                method: 'POST',
+                headers: { "ngrok-skip-browser-warning": "true" },
+                body: formData
+            });
+
+            if (!res.ok) throw new Error("Upload failed");
+
+            const data = await res.json();
+
+            toast({
+                title: "Upload Successful",
+                description: `Created collections: ${data.created_collections?.join(", ")}`,
+            });
+            setFiles([]);
+
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: "Upload Failed",
+                description: "Could not upload files to the AI Knowledge Base.",
+                variant: "destructive"
+            });
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     return (
-        <div className="max-w-7xl mx-auto animation-fade-in">
-            <div className="flex items-center justify-between mb-8">
-                <h2 className="text-3xl font-bold tracking-tight">My Courses</h2>
-                <div className="text-sm text-muted-foreground">Accepting New Enrollments • Spring 2026</div>
+        <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-3xl font-bold tracking-tight mb-2">Knowledge Base Upload</h2>
+                    <p className="text-muted-foreground">Upload documents (PDFs, PPTs) to train your AI Tutor.</p>
+                </div>
+                <Link to="/student-app/my-courses">
+                    <Button variant="outline" className="gap-2">
+                        View My Courses <ExternalLink className="w-4 h-4" />
+                    </Button>
+                </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {courses.map((course: any) => {
-                    const Icon = getIcon(course.icon);
-                    return (
-                        <div
-                            key={course._id}
-                            onClick={() => navigate(`/student-app/course/${course._id}`)}
-                            className="group relative bg-black/40 border border-white/5 rounded-2xl p-6 hover:bg-white/5 hover:border-primary/30 transition-all duration-300 cursor-pointer overflow-hidden"
-                        >
-                            {/* Progress Bar */}
-                            <div className="absolute top-0 left-0 h-1 bg-primary/20 w-full">
-                                <div className="h-full bg-primary" style={{ width: `${course.progress}%` }} />
-                            </div>
+            <div className="bg-black/40 border border-white/10 rounded-3xl p-10 text-center border-dashed hover:border-primary/50 transition-colors">
+                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Upload className="w-10 h-10 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Drag & Drop or Click to Upload</h3>
+                <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                    Supported files: PDF, PPTX, DOCX. These will be processed and added to the RAG vector database.
+                </p>
 
-                            <div className="flex items-start justify-between mb-6">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${course.bg} ${course.color} group-hover:scale-110 transition-transform`}>
-                                    <Icon className="w-6 h-6" />
+                <input
+                    type="file"
+                    multiple
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                />
+
+                <Button
+                    size="lg"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="rounded-full px-8"
+                >
+                    Select Documents
+                </Button>
+            </div>
+
+            {files.length > 0 && (
+                <div className="bg-black/20 rounded-2xl p-6 border border-white/5">
+                    <h4 className="font-semibold mb-4">Selected Files ({files.length})</h4>
+                    <div className="space-y-3">
+                        {files.map((file, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                                <div className="flex items-center gap-3">
+                                    <File className="w-5 h-5 text-primary" />
+                                    <span className="text-sm">{file.name}</span>
+                                    <span className="text-xs text-muted-foreground">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
                                 </div>
-                                <span className="text-xs font-medium px-2 py-1 rounded-full bg-white/5 border border-white/10 text-muted-foreground">
-                                    {course.level}
-                                </span>
+                                <Button variant="ghost" size="icon" onClick={() => removeFile(idx)} className="h-8 w-8 text-red-400 hover:text-red-300">
+                                    <X className="w-4 h-4" />
+                                </Button>
                             </div>
-
-                            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">{course.title}</h3>
-                            <p className="text-sm text-muted-foreground mb-6 line-clamp-2">{course.description}</p>
-
-                            <div className="flex items-center text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity -translate-x-4 group-hover:translate-x-0 duration-300">
-                                Continue Learning <ChevronRight className="w-4 h-4 ml-1" />
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        ))}
+                    </div>
+                    <div className="mt-6 flex justify-end">
+                        <Button
+                            onClick={handleUpload}
+                            disabled={isUploading}
+                            className="w-full sm:w-auto"
+                        >
+                            {isUploading ? "Uploading & Processing..." : "Upload to AI Knowledge Base"}
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -23,7 +23,7 @@ const StudentLayout = () => {
                 <nav className="space-y-2 flex-1">
                     {[
                         { icon: LayoutDashboard, label: "Dashboard", path: "/student-app" },
-                        { icon: BookOpen, label: "My Courses", path: "/student-app" }, // Simplified for demo
+                        { icon: BookOpen, label: "My Courses", path: "/student-app/my-courses" },
                         { icon: Calendar, label: "Schedule", path: "/student-app/schedule" },
                         { icon: Bell, label: "Notifications", path: "/student-app/notifications" },
                         { icon: Settings, label: "Settings", path: "/student-app/settings" },
@@ -32,10 +32,10 @@ const StudentLayout = () => {
                             key={item.label}
                             onClick={() => navigate(item.path)}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${isActive(item.path) && item.path !== "/student-app" // Basic check
+                                ? 'bg-primary/10 text-primary font-semibold shadow-[0_0_20px_rgba(45,212,191,0.1)]'
+                                : item.label === "Dashboard" && location.pathname === "/student-app"
                                     ? 'bg-primary/10 text-primary font-semibold shadow-[0_0_20px_rgba(45,212,191,0.1)]'
-                                    : item.label === "Dashboard" && location.pathname === "/student-app"
-                                        ? 'bg-primary/10 text-primary font-semibold shadow-[0_0_20px_rgba(45,212,191,0.1)]'
-                                        : 'text-muted-foreground hover:bg-white/5 hover:text-white'
+                                    : 'text-muted-foreground hover:bg-white/5 hover:text-white'
                                 }`}
                         >
                             <item.icon className="w-5 h-5" />

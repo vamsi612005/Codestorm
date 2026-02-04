@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, ArrowRight, Trophy } from "lucide-react";
+import { API_URL } from "@/lib/api";
 
 const QuizPage = () => {
     const { id } = useParams(); // This is the Course ID
@@ -17,7 +18,9 @@ const QuizPage = () => {
     const { data: quiz, isLoading, error } = useQuery({
         queryKey: ['quiz', id],
         queryFn: async () => {
-            const res = await fetch(`/api/courses/${id}/quiz`);
+            const res = await fetch(`${API_URL}/courses/${id}/quiz`, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
             if (!res.ok) {
                 if (res.status === 404) return null;
                 throw new Error('Network response was not ok');

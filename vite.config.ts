@@ -13,15 +13,12 @@ export default defineConfig(({ mode }) => ({
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://psycholinguistic-kiyoko-uncorruptibly.ngrok-free.dev',
         changeOrigin: true,
         secure: false,
-      },
-      '/ingest-api': {
-        target: 'http://10.10.9.229:8001',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/ingest-api/, ''),
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
       },
     },
   },

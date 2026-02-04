@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, RotateCcw, Lightbulb } from "lucide-react";
+import { API_URL } from "@/lib/api";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const FlashCardsPage = () => {
@@ -14,7 +15,9 @@ const FlashCardsPage = () => {
     const { data: cards, isLoading, error } = useQuery({
         queryKey: ['flashcards', id],
         queryFn: async () => {
-            const res = await fetch(`/api/courses/${id}/flashcards`);
+            const res = await fetch(`${API_URL}/courses/${id}/flashcards`, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
             if (!res.ok) throw new Error('Network response was not ok');
             return res.json();
         }

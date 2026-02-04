@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Phone, MessageSquare, HelpCircle, Bot, FileQuestion, Layers, ArrowLeft, ExternalLink } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { API_URL } from "@/lib/api";
 
 const features = [
     {
@@ -20,28 +21,18 @@ const features = [
         icon: MessageSquare,
         title: "Live Assistant",
         description: "Real-time human/AI help.",
-        color: "text-secondary",
-        bg: "bg-secondary/10",
-        action: "redirect",
-        url: "http://192.168.137.1:3000"
-    },
-    {
-        id: "chat",
-        icon: Bot,
-        title: "Chat with AI",
-        description: "Text-based study companion.",
         color: "text-primary",
         bg: "bg-primary/10",
-        action: "navigate",
-        path: "chat"
+        action: "redirect",
+        url: "https://live-api-web-console-main-tau.vercel.app/"
     },
     {
         id: "quiz",
         icon: HelpCircle,
         title: "Quiz",
         description: "Test your knowledge.",
-        color: "text-secondary",
-        bg: "bg-secondary/10",
+        color: "text-primary",
+        bg: "bg-primary/10",
         action: "navigate",
         path: "quiz"
     },
@@ -60,8 +51,8 @@ const features = [
         icon: Layers,
         title: "Question Paper Generator",
         description: "Create practice exams.",
-        color: "text-secondary",
-        bg: "bg-secondary/10",
+        color: "text-primary",
+        bg: "bg-primary/10",
         action: "navigate",
         path: "paper-gen"
     },
@@ -84,7 +75,9 @@ const CourseDetail = () => {
     const { data: course, isLoading, error } = useQuery({
         queryKey: ['course', id],
         queryFn: async () => {
-            const res = await fetch(`/api/courses/${id}`);
+            const res = await fetch(`${API_URL}/courses/${id}`, {
+                headers: { "ngrok-skip-browser-warning": "true" }
+            });
             if (!res.ok) throw new Error('Network response was not ok');
             return res.json();
         }

@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import Course from './models/Course.js';
 import Quiz from './models/Quiz.js';
 import Flashcard from './models/Flashcard.js';
+import multer from 'multer';
 
 dotenv.config();
 
@@ -49,6 +50,55 @@ app.get('/api/courses/:id', async (req, res) => {
     }
 });
 
+// Proxy to AI Service - RAG Query
+app.post('/api/ai/rag', async (req, res) => {
+    try {
+        const { message, collection, history } = req.body;
+
+        console.log("➡️ RAG Query:", { message, collection });
+
+        // Call the external Python AI Service
+        const response = await fetch('http://10.12.11.60:7575/invoke', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                task: "query",
+                payload: {
+                    question: message,
+                    collection_name: collection,
+                    chat_history: history || []
+                }
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`AI Service Error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        res.json(data);
+
+    } catch (err) {
+        console.error("AI Proxy Error:", err);
+        res.status(500).json({ error: "Failed to communicate with AI Tutor." });
+    }
+});
+
+// Proxy to Get Collections
+app.get('/api/ai/collections', async (req, res) => {
+    try {
+        console.log("Fetching collections...");
+        const response = await fetch('http://10.12.11.60:7575/collections');
+        if (!response.ok) throw new Error("Failed to fetch collections");
+        const data = await response.json();
+        console.log("Collections:", data);
+        res.json(data);
+    } catch (err) {
+        console.error("Collections Proxy Error:", err);
+        res.status(500).json({ error: "Failed to fetch collections" });
+    }
+});
+
 // Get quiz for a course
 app.get('/api/courses/:id/quiz', async (req, res) => {
     try {
@@ -67,6 +117,45 @@ app.get('/api/courses/:id/flashcards', async (req, res) => {
         res.json(cards);
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+// Configure Multer for RAM storage (files won't be saved to disk locally, just forwarded)
+const upload = multer({ storage: multer.memoryStorage() });
+
+// File Upload Proxy
+app.post('/api/upload', upload.array('files'), async (req, res) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: "No files uploaded." });
+        }
+
+        console.log(`📤 Uploading ${req.files.length} files to AI Service...`);
+
+        // Prepare FormData for the external service
+        const formData = new FormData();
+        req.files.forEach((file) => {
+            const blob = new Blob([file.buffer], { type: file.mimetype });
+            formData.append('files', blob, file.originalname);
+        });
+
+        // Call External AI Service
+        const response = await fetch('http://10.12.11.60:7575/upload', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`AI Service Upload Error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("✅ Upload Success:", data);
+        res.json(data);
+
+    } catch (err) {
+        console.error("❌ Upload Proxy Error:", err);
+        res.status(500).json({ error: "Failed to upload files to AI Service." });
     }
 });
 
